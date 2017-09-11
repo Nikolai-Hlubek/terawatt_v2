@@ -1,10 +1,40 @@
 <PageLayout>:
-	BoxLayout:
-		<CircularButton>:
-			canvas:
-				Ellipse:
-					pos: self.pos
-					size: self.size
+    FloatLayout:
+        canvas:
+            Color:
+                rgba: 216/255., 195/255., 88/255., 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        orientation: 'vertical'
+
+        Label:
+            font_size: 40
+            pos: 0, 500
+            size_hint: 1.0, 0.1
+            text: 'Weather'
+
+        Button:
+            font_size: 30
+            pos: 100, 400
+            text: "Update current weather"
+            size_hint: 0.8, 0.1
+            on_press: root.callback_weather()
+
+    BoxLayout:
+        orientation: 'vertical'
+        Button:
+            text: "Photovoltaic"
+            on_press: root.callback_photovoltaic()
+
+        Button:
+            text: "Battery"
+            on_press: root.callback_battery()
+
+        Button:
+            text: "Car"
+            on_press: root.callback_car()
 
     BoxLayout:
         canvas:

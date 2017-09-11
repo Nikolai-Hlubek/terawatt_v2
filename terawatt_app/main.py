@@ -1,35 +1,27 @@
 from kivy.app import App
 from kivy.uix.pagelayout import PageLayout
 
-from kivy.uix.behaviors.button import ButtonBehavior
-from kivy.uix.widget import Widget
-from kivy.vector import Vector
 
+class Controller(PageLayout):
 
-class CircularButton(ButtonBehavior, Widget):
-	def collide_point(self, x, y):
-		return Vector(x, y).distance(self.center) <= self.width / 2
+    def callback_weather(*args):
+        print("Show the weather forecast")
 
-		
-class MainLayout(PageLayout):
-	pass
+    def callback_photovoltaic(*args):
+        print("Access the photovoltaic")
+
+    def callback_battery(*args):
+        print("Access the battery")
+
+    def callback_car(*args):
+        print("Access the car")
 
 
 class TerawattApp(App):
 
     def build(self):
-        return MainLayout()
+        return Controller()
 
-def callback(*args):
-	print "i'm being pressed"
-		
 
 if __name__ == '__main__':
     TerawattApp().run()
-
-	
-
-
-
-
-      runTouchApp(CircularButton(on_press=callback))
