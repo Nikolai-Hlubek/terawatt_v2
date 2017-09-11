@@ -103,7 +103,10 @@ class Photovoltaic(Device):
         self.state.consume = False
 
         self._real_data={}
-        self._load_real_data()
+        try:
+            self._load_real_data()
+        except FileNotFoundError:
+            pass
 
     def _load_real_data(self):
         with open('analysis/pv_wirk_analysed.csv') as csvfile:
