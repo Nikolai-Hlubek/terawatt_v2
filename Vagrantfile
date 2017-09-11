@@ -170,13 +170,25 @@ Vagrant.configure("2") do |config|
 	pip3.6 install cython
 	pip3.6 install kivy
 	pip3.6 install pygame
+	pip3.6 install pysolar
 	
 	# Git
 	sudo yum -y install git
 
 	mkdir -p what-the-data
 	git clone https://github.com/nikolai-hlubek/terawatt /home/vagrant/what-the-data
-	git clone https://github.com/nikolai-hlubek/terawatt_v2 /home/vagrant/what-the-data_v2
+	# Private repository, would need credentials
+	#git clone https://github.com/nikolai-hlubek/terawatt_v2 /home/vagrant/what-the-data_v2
+    
+	# remove inital folder structure
+	rm -rf Desktop
+	rm -rf Documents
+	rm -rf Downloads
+	rm -rf Music
+	rm -rf Pictures
+	rm -rf Public
+	rm -rf Templates
+	rm -rf Videos
 	#--------------------------------------------------------------------------
 	
 	SHELL
