@@ -161,14 +161,23 @@ Vagrant.configure("2") do |config|
 	echo "options(bitmapType='cairo')" >> .Rprofile
 
 
-	# Desktop stuff for what-the-data hack-a-thon
+	#--------------------------------------------------------------------------
+	# Stuff for what-the-data hack-a-thon
+	#--------------------------------------------------------------------------
 	sudo yum -y groups install "GNOME Desktop" 
 	# The pip version of spyder doesn't work due to some qt-webkit inconsistencies so we install from the distro
 	sudo yum -y install spyder
 	pip3.6 install cython
 	pip3.6 install kivy
+	pip3.6 install pygame
 	
-	
+	# Git
+	sudo yum -y install git
+
+	mkdir -p what-the-data
+	git clone https://github.com/nikolai-hlubek/terawatt /home/vagrant/what-the-data
+	git clone https://github.com/nikolai-hlubek/terawatt_v2 /home/vagrant/what-the-data_v2
+	#--------------------------------------------------------------------------
 	
 	SHELL
 
