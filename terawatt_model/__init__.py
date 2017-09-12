@@ -3,7 +3,7 @@
 import sys
 
 if sys.version_info[0] < 3:
-    import devices
+    from devices import *
 else:
     from .devices import *
 
