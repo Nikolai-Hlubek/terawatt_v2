@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 
 from kivy.app import App
-from kivy.uix.pagelayout import PageLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty
 
 # Import terawatt model
 from model import *
 
-class Controller(PageLayout):
+class Controller(BoxLayout):
 
     label_photovoltaic = StringProperty("0")
 
     def __init__(self, **kwargs):
         # Call init of parent class
-        super(PageLayout, self).__init__(**kwargs)
+        super(BoxLayout, self).__init__(**kwargs)
         self.model = Model()
 
         self.label_photovoltaic = str(self.model.photovoltaic.energy_now.electrical)
