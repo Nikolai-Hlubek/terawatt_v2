@@ -12,8 +12,8 @@ class Battery(Device):
     
     Charging current estimate: Max current ~ Max energy * 0.4
     """
-    def __init__(self):
-        super().__init__()  # parent init
+    def __init__(self, **kwargs):
+        super(Battery, self).__init__(**kwargs)  # parent init
 
         self.state.provide = False
         self.state.consume = True
@@ -29,7 +29,7 @@ class Battery(Device):
         self.energy_max.electrical = self.battery_max_energy + self.super_cap_max_energy
     
     def update(self, power, state=None, power_requested=None):
-        super().update(power, state)
+        super(Battery, self).update(power, state)
         
         if self.state.consume:
             power = self._do_consume(power)
@@ -94,8 +94,8 @@ class Photovoltaic(Device):
     """
     Panel size and efficiency are tuned to match 10kW peak for maximum solar power.
     """
-    def __init__(self):
-        super().__init__()  # parent init
+    def __init__(self, **kwargs):
+        super(Photovoltaic, self).__init__(**kwargs)  # parent init
         self.panel_size = 40  # square meters
         self.efficiency = 0.2  # efficiency of solar power to electrical power conversion
 
@@ -105,7 +105,7 @@ class Photovoltaic(Device):
         self._real_data={}
         try:
             self._load_real_data()
-        except FileNotFoundError:
+        except IOError: #, FileNotFoundError:
             pass
 
     def _load_real_data(self):
@@ -118,7 +118,7 @@ class Photovoltaic(Device):
                 self._real_data[datetime.datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S")]=float(row[2])
 
     def update(self, power, time=None, state=None):
-        super().update(power, state)
+        super(Photovoltaic, self).update(power, state)
 
         if self.state.provide:
             if time!=None and time in self._real_data and self._real_data[time]!=None:
@@ -149,15 +149,20 @@ class Photovoltaic(Device):
 # sun.py
 
 #import numpy as np  # Don't use since we want to use pypy
-import pysolar
+import sys
+if sys.version_info[0] < 3:
+    import pysolar_python2.solar as solar
+    import pysolar_python2.radiation as radiation
+else:
+    import pysolar
 import datetime
 
 class Sun(Device):
     """
     Maximum power is an estimate.
     """
-    def __init__(self, latitude_deg=53.551086, longitude_deg=9.993682):
-        super().__init__()  # parent init
+    def __init__(self, latitude_deg=53.551086, longitude_deg=9.993682, **kwargs):
+        super(Sun, self).__init__()  # parent init
         self.maximum_power = 1000  # Watt per square meter
         
         self.state.provide = True
@@ -170,13 +175,19 @@ class Sun(Device):
 #        return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
 
     def sun_model(self, d=datetime.datetime.now()):
-        altitude_deg = pysolar.solar.get_altitude(self.latitude_deg, self.longitude_deg, d)
-        azimuth_deg = pysolar.solar.get_azimuth(self.latitude_deg, self.longitude_deg, d)
-
-        if altitude_deg > 0:
-            return pysolar.radiation.get_radiation_direct(d, altitude_deg)
+        solar_radiation = 0
+        if sys.version_info[0] < 3:
+            altitude_deg = solar.GetAltitude(self.latitude_deg, self.longitude_deg, d)
+            azimuth_deg = solar.GetAzimuth(self.latitude_deg, self.longitude_deg, d)
+            if altitude_deg > 0:
+                solar_radiation = radiation.GetRadiationDirect(d, altitude_deg)
         else:
-            return 0
+            altitude_deg = pysolar.solar.get_altitude(self.latitude_deg, self.longitude_deg, d)
+            azimuth_deg = pysolar.solar.get_azimuth(self.latitude_deg, self.longitude_deg, d)
+            if altitude_deg > 0:
+                solar_radiation = pysolar.radiation.get_radiation_direct(d, altitude_deg)
+        
+        return solar_radiation
     
     def update(self, time=datetime.datetime.now(), state=None):
 
@@ -205,15 +216,15 @@ class Provider(Device):
     As sink it just takes all surplus power and we can monitor the money created.
     """
 
-    def __init__(self):
-        super().__init__()  # parent init
+    def __init__(self, **kwargs):
+        super(Provider, self).__init__(**kwargs)  # parent init
         self.power_electrical_max = 3 * 230 * 64  # (three phases) * Volt * Ampere
 
         self.state.provide = True
         self.state.consume = True
 
     def update(self, power, state=None):
-        super().update(power, state)
+        super(Provider, self).update(power, state)
 
         if self.state.consume:
             power = self._do_consume(power)
@@ -252,8 +263,8 @@ class Car(Device):
     An electric car as consumer for the power produced.
     """
 
-    def __init__(self, power_in_max_electrical=7400, energy_max_electrical=22000, fuel_usage_100_km=17000):
-        super().__init__()  # parent init
+    def __init__(self, power_in_max_electrical=7400, energy_max_electrical=22000, fuel_usage_100_km=17000, **kwargs):
+        super(Car, self).__init__(**kwargs)  # parent init
         self.energy_now.electrical = 0
         self.energy_max.electrical = energy_max_electrical
         self.power_in_max.electrical = power_in_max_electrical
@@ -263,7 +274,7 @@ class Car(Device):
         self.state.consume = True
 
     def update(self, power, state=None):
-        super().update(power, state)
+        super(Car, self).update(power, state)
 
         if self.state.consume:
             power = self._do_consume(power)
@@ -315,8 +326,8 @@ class Electrolysis(Device):
     http://www.itm-power.com/product/hpac
     """
 
-    def __init__(self):
-        super().__init__()  # parent init
+    def __init__(self, **kwargs):
+        super(Electrolysis, self).__init__(**kwargs)  # parent init
         self.energy_now.electrical = 0
 
         self.decompositional_voltage = 1.229
@@ -347,7 +358,7 @@ class Electrolysis(Device):
         self._energy_production = ( pressure_prod / pressure_atmo ) * production_timestep * hydrogen_energy_density_atmo
 
     def update(self, power, state=None, power_requested=None):
-        super().update(power, state)
+        super(Electrolysis, self).update(power, state)
 
         if self.state.consume:
             power = self._do_consume(power)
@@ -393,8 +404,8 @@ class Methanization(Device):
     efficiency: methane of gas min. 80 Vol.-%
     """
 
-    def __init__(self):
-        super().__init__()  # parent init
+    def __init__(self, **kwargs):
+        super(Methanization, self).__init__(**kwargs)  # parent init
         self.energy_now.electrical = 0
         self.efficiency = 0.8
         self.energy_methanization = self._to_energy((800/self.efficiency)*hydrogen_energy_density_atmo)
@@ -403,7 +414,7 @@ class Methanization(Device):
         self.state.consume = True
 
     def update(self, power, state=None, power_requested=None):
-        super().update(power, state)
+        super(Methanization, self).update(power, state)
 
         if self.state.consume:
             power = self._do_consume(power)
@@ -454,8 +465,8 @@ class Cogeneration(Device):
     For now the thermal part is neglected.
     """
 
-    def __init__(self):
-        super().__init__()  # parent init
+    def __init__(self, **kwargs):
+        super(Cogeneration, self).__init__(**kwargs)  # parent init
         
         self.chemical_to_electrical_efficiency = 0.315
         self.power_out_min.electrical = 5000
@@ -468,7 +479,7 @@ class Cogeneration(Device):
         self.state.consume = True
         
     def update(self, power, state=None, power_requested=None):
-        super().update(power, state)
+        super(Cogeneration, self).update(power, state)
 
         if self.state.consume:
             power = self._do_consume(power)

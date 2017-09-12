@@ -2,27 +2,27 @@
 
 from .globals import *
 
-class Power:
-    def __init__(self):
+class Power(object):
+    def __init__(self, **kwargs):
         self.chemical = 0
         self.thermal = 0
         self.electrical = 0
         self.solar = 0
 
-class Energy:
-    def __init__(self):
+class Energy(object):
+    def __init__(self, **kwargs):
         self.chemical = 0
         self.thermal = 0
         self.electrical = 0
         self.solar = 0
 
-class State:
+class State(object):
     def __init__(self):
         self.provide = False
         self.consume = False
 
-class Device:
-    def __init__(self):
+class Device(object):
+    def __init__(self, **kwargs):
         self.state = State()
         self.energy_now = Energy()
         self.energy_provided = Energy()

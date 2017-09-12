@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 from kivy.app import App
 from kivy.uix.pagelayout import PageLayout
@@ -11,20 +11,19 @@ class Controller(PageLayout):
 
     label_photovoltaic = StringProperty("0")
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         # Call init of parent class
-        super(PageLayout, self).__init__()
+        super(PageLayout, self).__init__(**kwargs)
         self.model = Model()
 
         self.label_photovoltaic = str(self.model.photovoltaic.energy_now.electrical)
+        print(self.model.photovoltaic.energy_now.electrical)
 
     def callback_weather(self, *args):
         print("Show the weather forecast")
 
     def callback_photovoltaic(self, *args):
         print("Access the photovoltaic")
-        # FIXME: Just for test
-        self.model.increment()
         print(self.model.photovoltaic.energy_now.electrical)
         self.label_photovoltaic = str(self.model.photovoltaic.energy_now.electrical)
 
@@ -39,6 +38,11 @@ class Controller(PageLayout):
     def callback_car2(self, *args):
         print("Access the car 2")
         print(self.model.car2.energy_now.electrical)
+
+    def callback_increment(self, *args):
+        self.model.increment()
+        self.label_photovoltaic = str(self.model.photovoltaic.energy_now.electrical)
+        print(self.model.photovoltaic.energy_now.electrical)
 
 class TerawattApp(App):
 
