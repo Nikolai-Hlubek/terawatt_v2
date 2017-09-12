@@ -8,41 +8,42 @@ from kivy.properties import StringProperty
 from model import *
 
 class Controller(BoxLayout):
-
-    label_photovoltaic = StringProperty("0")
-
-    def __init__(self, **kwargs):
-        # Call init of parent class
-        super(BoxLayout, self).__init__(**kwargs)
-        self.model = Model()
-
-        self.label_photovoltaic = str(self.model.photovoltaic.energy_now.electrical)
-        print(self.model.photovoltaic.energy_now.electrical)
-
-    def callback_weather(self, *args):
-        print("Show the weather forecast")
-
-    def callback_photovoltaic(self, *args):
-        print("Access the photovoltaic")
-        print(self.model.photovoltaic.energy_now.electrical)
-        self.label_photovoltaic = str(self.model.photovoltaic.energy_now.electrical)
-
-    def callback_battery(self, *args):
-        print("Access the battery")
-        print(self.model.battery.energy_now.electrical)
-
-    def callback_car1(self, *args):
-        print("Access the car 1")
-        print(self.model.car1.energy_now.electrical)
-
-    def callback_car2(self, *args):
-        print("Access the car 2")
-        print(self.model.car2.energy_now.electrical)
-
-    def callback_increment(self, *args):
-        self.model.increment()
-        self.label_photovoltaic = str(self.model.photovoltaic.energy_now.electrical)
-        print(self.model.photovoltaic.energy_now.electrical)
+    pass
+#
+#     label_photovoltaic = StringProperty("0")
+#
+#     def __init__(self, **kwargs):
+#         # Call init of parent class
+#         super(BoxLayout, self).__init__(**kwargs)
+#         self.model = Model()
+#
+#         self.label_photovoltaic = str(self.model.photovoltaic.energy_now.electrical)
+#         print(self.model.photovoltaic.energy_now.electrical)
+#
+#     def callback_weather(self, *args):
+#         print("Show the weather forecast")
+#
+#     def callback_photovoltaic(self, *args):
+#         print("Access the photovoltaic")
+#         print(self.model.photovoltaic.energy_now.electrical)
+#         self.label_photovoltaic = str(self.model.photovoltaic.energy_now.electrical)
+#
+#     def callback_battery(self, *args):
+#         print("Access the battery")
+#         print(self.model.battery.energy_now.electrical)
+#
+#     def callback_car1(self, *args):
+#         print("Access the car 1")
+#         print(self.model.car1.energy_now.electrical)
+#
+#     def callback_car2(self, *args):
+#         print("Access the car 2")
+#         print(self.model.car2.energy_now.electrical)
+#
+#     def callback_increment(self, *args):
+#         self.model.increment()
+#         self.label_photovoltaic = str(self.model.photovoltaic.energy_now.electrical)
+#         print(self.model.photovoltaic.energy_now.electrical)
 
 class TerawattApp(App):
 
