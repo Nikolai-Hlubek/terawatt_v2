@@ -1,33 +1,57 @@
-<BoxLayout>:
-    canvas:
-        Color:
-            rgba: 100/255., 195/255., 88/255., 1
-        Rectangle:
-            pos: self.pos
-            size: self.size
+<PageLayout>:
+    FloatLayout:
+        canvas:
+            Color:
+                rgba: 216/255., 195/255., 88/255., 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
 
-    orientation: 'vertical'
-    Button:
-        text: "Photovoltaic"
-#        on_press: root.callback_photovoltaic()
+        orientation: 'vertical'
 
-    Label:
-        font_size: 40
-        size_hint: 1.0, 0.35
-#        text: root.label_photovoltaic
+        Label:
+            font_size: 40
+            pos: 0, 500
+            size_hint: 1.0, 0.1
+            text: 'Weather'
 
-    Button:
-        text: "Battery"
-#        on_press: root.callback_battery()
+        Button:
+            font_size: 30
+            pos: 100, 400
+            text: "Update current weather"
+            size_hint: 0.8, 0.1
+            on_press: root.callback_weather()
 
-    Button:
-        text: "Car1"
-#        on_press: root.callback_car1()
+    BoxLayout:
+        canvas:
+            Color:
+                rgba: 216/255., 195/255., 88/255., 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
 
-    Button:
-        text: "Car2"
-#        on_press: root.callback_car2()
+        orientation: 'vertical'
+        Button:
+            text: "Photovoltaic"
+            on_press: root.callback_photovoltaic()
 
-    Button:
-        text: "Increment"
-#        on_press: root.callback_increment()
+        Label:
+            font_size: 40
+            size_hint: 1.0, 0.35
+            text: root.label_photovoltaic
+
+        Button:
+            text: "Battery"
+            on_press: root.callback_battery()
+
+        Button:
+            text: "Car1"
+            on_press: root.callback_car1()
+
+        Button:
+            text: "Car2"
+            on_press: root.callback_car2()
+
+        Button:
+            text: "Increment"
+            on_press: root.callback_increment()
