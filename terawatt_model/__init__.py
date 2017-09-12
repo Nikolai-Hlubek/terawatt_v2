@@ -1,4 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
-from .devices import *
+import sys
+
+if sys.version_info[0] < 3:
+    import devices
+else:
+    from .devices import *
 
