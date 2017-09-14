@@ -171,6 +171,16 @@ Vagrant.configure("2") do |config|
 	pip3.6 install kivy
 	pip3.6 install pygame
 	pip3.6 install pysolar
+
+	# install kivy for python 2.7
+	sudo yum install python-pip
+	sudo yum install python-devel
+	sudo pip install --upgrade pip
+	sudo pip install --upgrade setuptools
+	sudo pip install cython
+	sudo pip install kivy
+	sudo pip install plyer
+	sudo pip install pygame
 	
 	# Git
 	sudo yum -y install git
