@@ -68,7 +68,7 @@ class Controller(PageLayout):
         self.label_car2 = str(txt) + 'Wh'
         txt = round(self.model.car2.energy_now.electrical,1)
         self.label_time = str(self.model.time_current)
-        txt = self.number_increment
+        txt = int(self.number_increment)
         self.label_increment = str(txt)
 
     def callback_weather(self, *args):
@@ -98,7 +98,7 @@ class Controller(PageLayout):
         print(self.model.battery.energy_now.electrical)
 
     def callback_increment_slider(self, instance, value):
-        self.number_increment = value
+        self.number_increment = int(value)
         print(self.number_increment)
 
     def callback_increment_reset(self, *args):
