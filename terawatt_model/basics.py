@@ -4,17 +4,17 @@ from .globals import *
 
 class Power(object):
     def __init__(self, **kwargs):
-        self.chemical = 0
-        self.thermal = 0
-        self.electrical = 0
-        self.solar = 0
+        self.chemical = 0.0
+        self.thermal = 0.0
+        self.electrical = 0.0
+        self.solar = 0.0
 
 class Energy(object):
     def __init__(self, **kwargs):
-        self.chemical = 0
-        self.thermal = 0
-        self.electrical = 0
-        self.solar = 0
+        self.chemical = 0.0
+        self.thermal = 0.0
+        self.electrical = 0.0
+        self.solar = 0.0
 
 class State(object):
     def __init__(self):
@@ -51,10 +51,10 @@ class Device(object):
         return power
     
     def _to_energy(self, power_type):
-        return power_type*(timestep/3600)
+        return power_type*(timestep/3600.0)
     
     def _to_power(self, energy_type):
-        return energy_type*(3600/timestep)
+        return energy_type*(3600.0/timestep)
     
     def _log_current_power(self, power):
         """
