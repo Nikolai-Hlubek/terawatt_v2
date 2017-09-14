@@ -7,6 +7,8 @@ from kivy.properties import StringProperty
 # Import terawatt model
 from model import *
 
+__version__ = "0.2"
+
 class Controller(PageLayout):
 
     label_photovoltaic = StringProperty("0")
