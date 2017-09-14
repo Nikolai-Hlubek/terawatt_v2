@@ -1,3 +1,22 @@
+<Notification>:
+    orientation: 'vertical'
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: 1, None
+        TextInput:
+            id: notification_title
+            text: 'Hallo What-The-Hacker'
+            size_hint: 1, None
+        TextInput:
+            id: notification_text
+            text: 'Geh doch mal an die frische Luft'
+            size_hint: 1, None
+        TextInput:
+            id: ticker_text
+            text: 'New notification'
+            size_hint: 1, None
+
+
 <PageLayout>:
     FloatLayout:
         canvas:
@@ -22,36 +41,104 @@
             size_hint: 0.8, 0.1
             on_press: root.callback_weather()
 
-    BoxLayout:
+    GridLayout:
+        cols: 2
+        rows: 6
+
         canvas:
             Color:
-                rgba: 216/255., 195/255., 88/255., 1
+                rgba: 255/255.0, 255/255.0, 255/255.0, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
 
         orientation: 'vertical'
-        Button:
+        ImageButton:
+            source: "icons/IconPhotovoltaic.png"
             text: "Photovoltaic"
             on_press: root.callback_photovoltaic()
+            size_hint_x: 0.1
 
         Label:
             font_size: 40
             size_hint: 1.0, 0.35
+            color: (0/255.0, 0/255.0, 0/255.0, 1)
             text: root.label_photovoltaic
+            size_hint_x: 0.9
 
-        Button:
+        ImageButton:
+            source: "icons/IconBattery.png"
             text: "Battery"
             on_press: root.callback_battery()
 
-        Button:
+        Label:
+            font_size: 40
+            size_hint: 1.0, 0.35
+            color: (0/255.0, 0/255.0, 0/255.0, 1)
+            text: root.label_battery
+
+        ImageButton:
+            source: "icons/IconCar.png"
             text: "Car1"
             on_press: root.callback_car1()
 
-        Button:
+        Label:
+            font_size: 40
+            size_hint: 1.0, 0.35
+            color: (0/255.0, 0/255.0, 0/255.0, 1)
+            text: root.label_car1
+
+        ImageButton:
+            source: "icons/IconBicycle.png"
             text: "Car2"
             on_press: root.callback_car2()
 
+        Label:
+            font_size: 40
+            size_hint: 1.0, 0.35
+            color: (0/255.0, 0/255.0, 0/255.0, 1)
+            text: root.label_car2
+
         Button:
-            text: "Increment"
-            on_press: root.callback_increment()
+            text: "Predict"
+            on_press: root.callback_increment_do()
+
+        BoxLayout:
+            orientation: 'horizontal'
+
+            Slider:
+                id: incrementSlider
+                min: 1
+                max: 600
+                value: 120
+                step: 1
+                orientation: 'horizontal'
+                on_value: root.callback_increment_slider(*args)
+
+            Label:
+                font_size: 40
+                color: (0/255.0, 0/255.0, 0/255.0, 1)
+                text: str(incrementSlider.value) + 's'
+
+        Button:
+            text: "Reset"
+            on_press: root.callback_increment_reset()
+
+        Label:
+            font_size: 40
+            color: (0/255.0, 0/255.0, 0/255.0, 1)
+            text: root.label_time
+
+    BoxLayout:
+
+        canvas:
+            Color:
+                rgba: 128/255.0, 255/255.0, 255/255.0, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Button:
+            text: 'Notification Test'
+            size_hint: 1, None
+            on_press: root.notification.do_notify(mode='normal')

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import sys
 import os
@@ -12,16 +12,16 @@ import terawatt_model
 class Model:
 
     def __init__(self):
-        self.update_agent_n()
-        self.initialize()
+        self._update_agent_n()
+        self._initialize()
         self.update_external()
         self.increment()
 
 
-    def update_agent_n(self):
+    def _update_agent_n(self):
         self.agent_n = dict(
             # car1_energy = random.randint(0, terawatt_model.Car.energy_max.electrical),
-            car1_energy=80,
+            car1_energy=21900,
             charge_car1_start=random.randint(0, 19),
             charge_car1_time=random.randint(0, 5),
             car1_distance_work=random.randint(40, 80),
@@ -41,11 +41,11 @@ class Model:
         )
 
 
-    def initialize(self):
+    def _initialize(self):
         self.sun = terawatt_model.Sun()
         self.photovoltaic = terawatt_model.Photovoltaic()
         self.car1 = terawatt_model.Car()
-        self.car2 = terawatt_model.Car()
+        self.car2 = terawatt_model.Car(energy_max_electrical=500) # E-Bike
         self.provider = terawatt_model.Provider()
         self.battery = terawatt_model.Battery()
         self.electrolysis = terawatt_model.Electrolysis()
