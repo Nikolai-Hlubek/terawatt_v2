@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from .globals import *
-from .basics import *
+from globalvars import *
+from basics import *
 import csv
 
 # battery.py
@@ -117,6 +117,7 @@ class Photovoltaic(Device):
             for row in reader:
                 self._real_data[datetime.datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S")]=float(row[2])
 
+
     def update(self, power, time=None, state=None):
         super(Photovoltaic, self).update(power, state)
 
@@ -125,7 +126,7 @@ class Photovoltaic(Device):
                 power = self._do_provide_timed(power, time)
             else:
                 power = self._do_provide(power)
-        
+
         self._log_current_power(power)
         return power
 
@@ -136,6 +137,7 @@ class Photovoltaic(Device):
         self.energy_now.electrical = energy
         self.energy_provided.electrical += energy
         return power
+
 
     def _do_provide(self, power):
         power.electrical = self.efficiency * self.panel_size * power.solar
@@ -148,6 +150,7 @@ class Photovoltaic(Device):
 
 # sun.py
 
+import os
 #import numpy as np  # Don't use since we want to use pypy
 import sys
 if sys.version_info[0] < 3:
@@ -170,22 +173,35 @@ class Sun(Device):
         
         self.latitude_deg = latitude_deg  # positive in the northern hemisphere
         self.longitude_deg = longitude_deg  # negative reckoning west from prime meridian in Greenwich, England
+        
+        self._real_data={}
+        self._load_data()
 
-#    def gaussian(self, x, mu, sig):
-#        return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+    def _load_data(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(dir_path, 'sun.csv')) as csvfile:
+            dialect = csv.Sniffer().sniff(csvfile.read(1024))
+            csvfile.seek(0)
+            reader = csv.reader(csvfile, dialect)
+            next(reader, None)
+            for row in reader:
+                self._real_data[datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")]=float(row[1])
 
     def sun_model(self, d=datetime.datetime.now()):
         solar_radiation = 0
-        if sys.version_info[0] < 3:
-            altitude_deg = solar.GetAltitude(self.latitude_deg, self.longitude_deg, d)
-            azimuth_deg = solar.GetAzimuth(self.latitude_deg, self.longitude_deg, d)
-            if altitude_deg > 0:
-                solar_radiation = radiation.GetRadiationDirect(d, altitude_deg)
+        if d in self._real_data and self._real_data[d]!=None:
+            solar_radiation=self._real_data[d]
         else:
-            altitude_deg = pysolar.solar.get_altitude(self.latitude_deg, self.longitude_deg, d)
-            azimuth_deg = pysolar.solar.get_azimuth(self.latitude_deg, self.longitude_deg, d)
-            if altitude_deg > 0:
-                solar_radiation = pysolar.radiation.get_radiation_direct(d, altitude_deg)
+            if sys.version_info[0] < 3:
+                altitude_deg = solar.GetAltitude(self.latitude_deg, self.longitude_deg, d)
+                azimuth_deg = solar.GetAzimuth(self.latitude_deg, self.longitude_deg, d)
+                if altitude_deg > 0:
+                    solar_radiation = radiation.GetRadiationDirect(d, altitude_deg)
+            else:
+                altitude_deg = pysolar.solar.get_altitude(self.latitude_deg, self.longitude_deg, d)
+                azimuth_deg = pysolar.solar.get_azimuth(self.latitude_deg, self.longitude_deg, d)
+                if altitude_deg > 0:
+                    solar_radiation = pysolar.radiation.get_radiation_direct(d, altitude_deg)
         
         return solar_radiation
     
@@ -535,7 +551,7 @@ class Cogeneration(Device):
         else:
             power.chemical = self.power_out_max.electrical / self.chemical_to_electrical_efficiency
         return power
-
+        
 
 # radiator.py
 class Radiator(Device):
@@ -606,4 +622,3 @@ class Room(Device):
             power.thermal -= power.thermal  # Room takes all energy from radiator
 
         return power
-
