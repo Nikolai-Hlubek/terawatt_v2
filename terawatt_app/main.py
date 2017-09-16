@@ -113,12 +113,6 @@ class Controller(PageLayout):
 
             accelerometer.enable()  # enable the accelerometer
 
-            try:
-                self.client.connect('energie-campus.cybus.io', 1883)
-                self.client.publish('io/cybus/energie-campus/coding-agents/init', json.dumps({'time': datetime.datetime.now(), 'id': self.uniId}))
-                self.client.disconnect()
-            except:
-                print('mqtt failed')
         except:
      #       self.lblAcce.text = "Failed to start accelerometer"  # error
             pass
