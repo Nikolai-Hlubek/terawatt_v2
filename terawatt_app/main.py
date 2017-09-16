@@ -34,6 +34,20 @@ class Notification(BoxLayout):
 
         notification.notify(**kwargs)
 
+class NotificationRadiator(BoxLayout):
+
+    def do_notify(self, heizung):
+        title = self.ids.notification_title.text
+        message = self.ids.notification_text.text
+        ticker = self.ids.ticker_text.text
+        if PY2:
+            title = title.decode('utf8')
+            message = message.decode('utf8')
+        message = message + heizung
+        kwargs = {'title': title, 'message': message, 'ticker': ticker}
+
+        notification.notify(**kwargs)
+
 
 class ImageButton(ButtonBehavior, Image):
     pass
@@ -62,6 +76,8 @@ class Controller(PageLayout):
         self.modelThermal3 = ModelThermal(room_power_out=100)
         self._update_labels_electrical()
         self.notification = Notification()
+        self.notificationRadiator = NotificationRadiator()
+        self.radiator_monitoring_running = False
 
     def _update_labels_electrical(self):
         """
@@ -126,17 +142,50 @@ class Controller(PageLayout):
         self.modelElectrical = ModelElectrical()
         self._update_labels_electrical()
 
-    def callback_radiator_monitoring(self, *args):
+    def callback_start_radiator_monitoring(self, *args):
+        self.modelThermal1 = ModelThermal(room_power_out=10)
+        self.modelThermal2 = ModelThermal(room_power_out=20)
+        self.modelThermal3 = ModelThermal(room_power_out=100)
 
-        # Increment by one minute
+        # Check if model is already running then stop the old one
+        if self.radiator_monitoring_running == False:
+            self._callback_radiator_monitoring_do()
+            self.radiator_monitoring_running = True
+        # Wait for stop then call
+        else:
+            Clock.unschedule(self._callback_radiator_monitoring_do)
+            self.radiator_monitoring_running = False
+            self._callback_radiator_monitoring_do()
+            self.radiator_monitoring_running = True
+
+
+    def _callback_radiator_monitoring_do(self, *args):
+        # Increment by some timesteps
         for i in range(10):
             self.modelThermal1.increment()
+        if self.modelThermal1.threshold_counter > 150:
+            if not self.modelThermal1.notification_sent:
+                self.notificationRadiator.do_notify('Heizung 1')
+                self.modelThermal1.notification_sent = True
+
+        # Increment by some timesteps
         for i in range(10):
             self.modelThermal2.increment()
+        if self.modelThermal2.threshold_counter > 150:
+            if not self.modelThermal2.notification_sent:
+                self.notificationRadiator.do_notify('Heizung 2')
+                self.modelThermal2.notification_sent = True
+
+        # Increment by some timesteps
         for i in range(10):
             self.modelThermal3.increment()
+        if self.modelThermal3.threshold_counter > 150:
+            if not self.modelThermal3.notification_sent:
+                self.notificationRadiator.do_notify('Heizung 3')
+                self.modelThermal3.notification_sent = True
         self._update_labels_thermal()
-        Clock.schedule_once(self.callback_radiator_monitoring, 1)
+
+        Clock.schedule_once(self._callback_radiator_monitoring_do, 1)
 
 
 class TerawattApp(App):

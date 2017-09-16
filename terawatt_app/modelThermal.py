@@ -21,10 +21,16 @@ class ModelThermal:
         self.radiator = terawatt_model.Radiator()
         self.room = terawatt_model.Room(power_out_thermal=self.room_power_out)
         self.provider = terawatt_model.Provider()
+        self.threshold_counter = 0
+        self.notification_sent = False
 
         self.energy_now_thermal_init = self.room.energy_now.thermal
 
         self.time_current = datetime.datetime(2017, 9, 17, 12, 0, 0, 0)
+
+    def check_threshold(self, threshold=75):
+            if self.provider.power.thermal > threshold:
+                self.threshold_counter += 1
 
     def increment(self):
 
@@ -42,6 +48,9 @@ class ModelThermal:
         power = self.room.update(power, state='consume')
 
         power = self.provider.update(power_requested, state='consume')
+
+        self.check_threshold()
+
 
 
 if __name__ == '__main__':

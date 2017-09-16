@@ -17,6 +17,24 @@
             size_hint: 1, None
 
 
+<NotificationRadiator>:
+    orientation: 'vertical'
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: 1, None
+        TextInput:
+            id: notification_title
+            text: 'Hallo What-The-Mieter'
+            size_hint: 1, None
+        TextInput:
+            id: notification_text
+            text: 'Schau mal ob die Fenster zu sind. Folgende Heizkoerper heizt sehr stark: '
+            size_hint: 1, None
+        TextInput:
+            id: ticker_text
+            text: 'New notification'
+            size_hint: 1, None
+
 <PageLayout>:
     FloatLayout:
         canvas:
@@ -156,7 +174,7 @@
 
         Button:
             text: 'Start radiator monitoring'
-            on_press: root.callback_radiator_monitoring()
+            on_press: root.callback_start_radiator_monitoring()
 
         Image:
             source: "icons/IconSun.png"
