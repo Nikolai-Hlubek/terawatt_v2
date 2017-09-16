@@ -238,40 +238,48 @@ class Controller(PageLayout):
 
         Clock.schedule_once(self._callback_radiator_monitoring_do, 1)
 
+    def measure(self, *args):
+        print('Measuring')
+        try:
+            self.xVar.append(accelerometer.acceleration[0])
+            self.yVar.append(accelerometer.acceleration[1])
+            self.zVar.append(accelerometer.acceleration[2])
+        except:
+            print("Cannot read accelerometer!")
+            return False
+
+        print('Number of data points:')
+        print(len(self.xVar))
+        if len(self.xVar) > 60:
+            try:
+                self.client.connect('energie-campus.cybus.io', 1883)
+                now = datetime.datetime.now()
+                self.client.publish('io/cybus/energie-campus/coding-agents/move', json.dumps(
+                    {'time': datetime.datetime.strftime(now, '%Y-%m-%d %H:%M:%S'), 'id': self.uniId, 'x': self.xVar,
+                     'y': self.yVar, 'z': self.zVar}))
+                self.client.disconnect()
+            except:
+                print('mqtt failed')
+            print('Returning False')
+            return False
+        else:
+            print('Returning True')
+            return True
+
     def callback_go_out (self, *args):
         #notification.notify(**kwargs)
         self.GoOutnotification.do_notify()
         try:
-            vibrator.vibrate(3)
+            vibrator.vibrate(1)
         except Exception as e:
             print(e)
-        Clock.schedule_interval(self.callback_go_out, 1800)
+        Clock.schedule_once(self.callback_go_out, 1800)
 
         self.xVar=[]
         self.yVar=[]
         self.zVar=[]
 
-        def measure():
-            try:
-                self.xVar.append(accelerometer.acceleration[0])
-                self.yVar.append(accelerometer.acceleration[1])
-                self.zVar.append(accelerometer.acceleration[2])
-                if len(self.xVar)<180:
-                    Clock.schedule_once(measure, 3)
-                else:
-                    try:
-                        self.client.connect('energie-campus.cybus.io', 1883)
-                        now = datetime.datetime.now()
-                        self.client.publish('io/cybus/energie-campus/coding-agents/move', json.dumps(
-                            {'time': datetime.datetime.strftime(now, '%Y-%m-%d %H:%M:%S'), 'id': self.uniId, 'x': self.xVar,
-                             'y': self.yVar, 'z': self.zVar}))
-                        self.client.disconnect()
-                    except:
-                        print('mqtt failed')
-
-            except:
-                print("Cannot read accelerometer!")
-        measure()
+        Clock.schedule_interval(self.measure, 3)
 
 class TerawattApp(App):
 
