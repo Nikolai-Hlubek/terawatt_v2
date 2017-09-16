@@ -108,11 +108,36 @@ class Photovoltaic(Device):
         except IOError: #, FileNotFoundError:
             pass
 
+    def _load_real_data(self):
+        with open('analysis/pv_wirk_analysed.csv') as csvfile:
+            dialect = csv.Sniffer().sniff(csvfile.read(1024))
+            csvfile.seek(0)
+            reader = csv.reader(csvfile, dialect)
+            next(reader, None)
+            for row in reader:
+                self._real_data[datetime.datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S")]=float(row[2])
+
+
     def update(self, power, time=None, state=None):
         super(Photovoltaic, self).update(power, state)
 
+        if self.state.provide:
+            if time!=None and time in self._real_data and self._real_data[time]!=None:
+                power = self._do_provide_timed(power, time)
+            else:
+                power = self._do_provide(power)
+
         self._log_current_power(power)
         return power
+
+    def _do_provide_timed(self, power, time):
+        power.electrical = self._real_data[time]
+
+        energy = self._to_energy(power.electrical)
+        self.energy_now.electrical = energy
+        self.energy_provided.electrical += energy
+        return power
+
 
     def _do_provide(self, power):
         power.electrical = self.efficiency * self.panel_size * power.solar
@@ -125,6 +150,7 @@ class Photovoltaic(Device):
 
 # sun.py
 
+import os
 #import numpy as np  # Don't use since we want to use pypy
 import sys
 if sys.version_info[0] < 3:
@@ -152,7 +178,8 @@ class Sun(Device):
         self._load_data()
 
     def _load_data(self):
-        with open('sun.csv') as csvfile:
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(dir_path, 'sun.csv')) as csvfile:
             dialect = csv.Sniffer().sniff(csvfile.read(1024))
             csvfile.seek(0)
             reader = csv.reader(csvfile, dialect)
@@ -525,5 +552,73 @@ class Cogeneration(Device):
             power.chemical = self.power_out_max.electrical / self.chemical_to_electrical_efficiency
         return power
         
-        
-        
+
+# radiator.py
+class Radiator(Device):
+    """
+    A radiator as model
+    """
+
+    def __init__(self, power_out_max_thermal=3000, **kwargs):
+        super(Radiator, self).__init__(**kwargs)  # parent init
+        self.power_out_max.thermal = power_out_max_thermal
+
+        self.state.provide = True
+        self.state.consume = False
+
+    def update(self, power, state=None, power_requested=None):
+        super(Radiator, self).update(power, state)
+
+        if self.state.provide:
+            power = self._do_provide(power, power_requested)
+
+        self._log_current_power(power)
+        return power
+
+    def _do_provide(self, power, power_requested=None):
+        if power_requested == None:
+            return power
+
+        if power_requested.thermal < self.power_out_max.thermal:
+            power.thermal += power_requested.thermal
+            self.energy_provided.thermal += self._to_energy(power_requested.thermal)
+        elif power_requested.thermal > self.power_out_max.thermal:
+            power.thermal += self.power_out_max.thermal
+            self.energy_provided.thermal += self._to_energy(self.power_out_max.thermal)
+
+        return power
+
+# room.py
+class Room(Device):
+    """
+    A simple room with one window
+    """
+
+    def __init__(self, power_out_thermal =10, energy_max_thermal=25, **kwargs):
+        super(Room, self).__init__(**kwargs)  # parent init
+        self.power_out_max.thermal = power_out_thermal
+        self.energy_now.thermal = 20
+        self.energy_max.thermal = energy_max_thermal
+
+        self.state.provide = False
+        self.state.consume = True
+
+
+    def update(self, power, state=None):
+        super(Room, self).update(power, state)
+
+        if self.state.consume:
+            power = self._do_consume(power)
+
+        return power
+
+
+    def _do_consume(self, power):
+        self.energy_now.thermal -= self._to_energy(self.power_out_max.thermal)  # Room looses energy to the outside
+
+        additional_energy = self._to_energy(power.thermal)
+        if self.energy_now.thermal + additional_energy < self.energy_max.thermal:
+            self.energy_now.thermal += additional_energy
+            power.thermal -= power.thermal  # Room takes all energy from radiator
+
+        return power
