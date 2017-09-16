@@ -105,14 +105,18 @@ class Controller(PageLayout):
         self.GoOutnotification = GoOutNotification()
         self.notificationRadiator = NotificationRadiator()
         self.radiator_monitoring_running = False
+        print('starting mqtt')
         self.client=mqtt.Client()
         self.client.username_pw_set('wtd17.coding-agents.energy-app','istmiregal')
         try:
+            print('starting accelerometer')
             accelerometer.enable()  # enable the accelerometer
             # if you want do disable it, just run: accelerometer.disable()
         except:
      #       self.lblAcce.text = "Failed to start accelerometer"  # error
             pass
+
+        print('main init success')
 
         Clock.schedule_once(self.callback_go_out, deltaSeconds)
 
