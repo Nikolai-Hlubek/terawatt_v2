@@ -19,7 +19,7 @@ from plyer.compat import PY2
 from modelElectrical import *
 from modelThermal import *
 
-__version__ = "0.5"
+__version__ = "0.6"
 
 import paho.mqtt.client as mqtt
 
