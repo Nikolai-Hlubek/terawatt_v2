@@ -7,7 +7,8 @@ import datetime
 import random
 
 sys.path.insert(0, os.path.join('..'))
-import terawatt_model
+import terawatt_model_60s as terawatt_model
+
 
 class ModelElectrical:
 
