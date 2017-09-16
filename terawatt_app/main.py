@@ -105,9 +105,11 @@ class Controller(PageLayout):
         self.GoOutnotification = GoOutNotification()
         self.notificationRadiator = NotificationRadiator()
         self.radiator_monitoring_running = False
-        self.client=mqtt.Client()
-        self.client.username_pw_set('wtd17.coding-agents.energy-app','istmiregal')
+
         try:
+            self.client=mqtt.Client()
+            self.client.username_pw_set('wtd17.coding-agents.energy-app','istmiregal')
+
             accelerometer.enable()  # enable the accelerometer
             # if you want do disable it, just run: accelerometer.disable()
         except:
@@ -243,11 +245,14 @@ class Controller(PageLayout):
                 z.append(accelerometer.acceleration[2])  # Z
                 time.sleep(1)
             except:
-    #txt = "Cannot read accelerometer!"  # error
-               pass
-        self.client.connect('energie-campus.cybus.io',1883)
-        self.client.publish('io/cybus/energie-campus/coding-agents/go-out',json.dumps({'x':x,'y':y,'z':z}))
-        self.client.disconnect()
+                print("Cannot read accelerometer!")
+
+        try:
+            self.client.connect('energie-campus.cybus.io',1883)
+            self.client.publish('io/cybus/energie-campus/coding-agents/go-out',json.dumps({'x':x,'y':y,'z':z}))
+            self.client.disconnect()
+        except:
+            print('mqtt failed')
 
 class TerawattApp(App):
 
