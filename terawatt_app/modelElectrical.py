@@ -141,6 +141,6 @@ class ModelElectrical:
 
         power = self.provider.update(power)
 
-        if self.time_current > datetime.datetime(2017, 9, 16, 23, 59, 59, 0):
+        if self.time_current > datetime.datetime(2017, 9, 19, 23, 59, 59, 0):
             self.time_current = datetime.datetime(2017, 9, 16, 0, 0, 0, 0)
 

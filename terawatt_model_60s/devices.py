@@ -189,8 +189,9 @@ class Sun(Device):
 
     def sun_model(self, d=datetime.datetime.now()):
         solar_radiation = 0
-        if d in self._real_data and self._real_data[d]!=None:
-            solar_radiation=self._real_data[d]
+        hourly=d+datetime.timedelta(minutes=-1*d.minute, seconds=-1*d.second, microseconds=-1*d.microsecond)
+        if hourly in self._real_data and self._real_data[hourly]!=None:
+            solar_radiation=self._real_data[hourly]
         else:
             if sys.version_info[0] < 3:
                 altitude_deg = solar.GetAltitude(self.latitude_deg, self.longitude_deg, d)

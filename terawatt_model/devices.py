@@ -192,6 +192,7 @@ class Sun(Device):
         if d in self._real_data and self._real_data[d]!=None:
             solar_radiation=self._real_data[d]
         else:
+            return 0
             if sys.version_info[0] < 3:
                 altitude_deg = solar.GetAltitude(self.latitude_deg, self.longitude_deg, d)
                 azimuth_deg = solar.GetAzimuth(self.latitude_deg, self.longitude_deg, d)
