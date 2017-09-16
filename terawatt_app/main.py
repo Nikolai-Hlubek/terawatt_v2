@@ -27,6 +27,7 @@ import random
 
 import datetime
 from plyer import uniqueid
+from plyer import vibrator
 
 import time
 
@@ -236,6 +237,10 @@ class Controller(PageLayout):
     def callback_go_out (self, *args):
         #notification.notify(**kwargs)
         self.GoOutnotification.do_notify()
+        try:
+            vibrator.vibrate(3)
+        except Exception as e:
+            print(e)
         Clock.schedule_interval(self.callback_go_out, 120)
 
         x=[]
