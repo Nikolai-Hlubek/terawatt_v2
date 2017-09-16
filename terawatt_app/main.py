@@ -26,6 +26,7 @@ import json
 import random
 
 import datetime
+from plyer import uniqueid
 
 import time
 
@@ -105,7 +106,10 @@ class Controller(PageLayout):
         self.GoOutnotification = GoOutNotification()
         self.notificationRadiator = NotificationRadiator()
         self.radiator_monitoring_running = False
-        self.uniId=random.randint(0, 9999999999)
+        try:
+            self.uniId=uniqueid.id
+        except:
+            self.uniId=random.randint(0, 9999999999)
 
         try:
             self.client=mqtt.Client()
@@ -250,7 +254,8 @@ class Controller(PageLayout):
 
         try:
             self.client.connect('energie-campus.cybus.io',1883)
-            self.client.publish('io/cybus/energie-campus/coding-agents/move',json.dumps({'time': datetime.datetime.now(), 'id': self.uniId, 'x':x,'y':y,'z':z}))
+            now=datetime.datetime.now()
+            self.client.publish('io/cybus/energie-campus/coding-agents/move',json.dumps({'time': datetime.datetime.strftime(now, '%Y-%m-%d %H:%M:%S'), 'id': self.uniId, 'x':x,'y':y,'z':z}))
             self.client.disconnect()
         except:
             print('mqtt failed')
