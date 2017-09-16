@@ -158,6 +158,9 @@
 
         Button:
             text: "Start"
+            font_size: 40
+            bold: True
+            height: 10
             on_press: root.callback_increment_do()
 
         Label:
@@ -190,13 +193,6 @@
                 pos: self.pos
                 size: self.size
 
-        Button:
-            text: 'Start radiator monitoring'
-            on_press: root.callback_start_radiator_monitoring()
-
-        Image:
-            source: "icons/IconSun.png"
-
         Image:
             source: "icons/IconRadiator1.png"
 
@@ -221,3 +217,11 @@
             color: (0/255.0, 0/255.0, 0/255.0, 1)
             text: root.label_radiator3_power
 
+        Button:
+            font_size: 30
+            bold: True
+            height: 10
+            text: 'Start radiator monitoring'
+            on_press: root.callback_start_radiator_monitoring()
+        Image:
+            source: "icons/IconSun.png"
