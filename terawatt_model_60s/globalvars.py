@@ -2,5 +2,5 @@
 
 
 hydrogen_energy_density_atmo = 3  # Wh/liter
-timestep = 1
+timestep = 60
 
