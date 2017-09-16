@@ -17,8 +17,6 @@ from plyer.compat import PY2
 # Import terawatt model
 from modelElectrical import *
 from modelThermal import *
-from plyer import uniqueid
-
 
 __version__ = "0.4"
 
@@ -107,10 +105,7 @@ class Controller(PageLayout):
         self.GoOutnotification = GoOutNotification()
         self.notificationRadiator = NotificationRadiator()
         self.radiator_monitoring_running = False
-        try:
-            self.uniId=uniqueid.id
-        except:
-            self.uniId=random.randint(0, 9999999999)
+        self.uniId=random.randint(0, 9999999999)
 
         try:
             self.client=mqtt.Client()
