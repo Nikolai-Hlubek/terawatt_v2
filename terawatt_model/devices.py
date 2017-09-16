@@ -535,6 +535,75 @@ class Cogeneration(Device):
         else:
             power.chemical = self.power_out_max.electrical / self.chemical_to_electrical_efficiency
         return power
-        
-        
-        
+
+
+# radiator.py
+class Radiator(Device):
+    """
+    A radiator as model
+    """
+
+    def __init__(self, power_out_max_thermal=3000, **kwargs):
+        super(Radiator, self).__init__(**kwargs)  # parent init
+        self.power_out_max.thermal = power_out_max_thermal
+
+        self.state.provide = True
+        self.state.consume = False
+
+    def update(self, power, state=None, power_requested=None):
+        super(Radiator, self).update(power, state)
+
+        if self.state.provide:
+            power = self._do_provide(power, power_requested)
+
+        self._log_current_power(power)
+        return power
+
+    def _do_provide(self, power, power_requested=None):
+        if power_requested == None:
+            return power
+
+        if power_requested.thermal < self.power_out_max.thermal:
+            power.thermal += power_requested.thermal
+            self.energy_provided.thermal += self._to_energy(power_requested.thermal)
+        elif power_requested.thermal > self.power_out_max.thermal:
+            power.thermal += self.power_out_max.thermal
+            self.energy_provided.thermal += self._to_energy(self.power_out_max.thermal)
+
+        return power
+
+# room.py
+class Room(Device):
+    """
+    A simple room with one window
+    """
+
+    def __init__(self, power_out_thermal =10, energy_max_thermal=25, **kwargs):
+        super(Room, self).__init__(**kwargs)  # parent init
+        self.power_out_max.thermal = power_out_thermal
+        self.energy_now.thermal = 20
+        self.energy_max.thermal = energy_max_thermal
+
+        self.state.provide = False
+        self.state.consume = True
+
+
+    def update(self, power, state=None):
+        super(Room, self).update(power, state)
+
+        if self.state.consume:
+            power = self._do_consume(power)
+
+        return power
+
+
+    def _do_consume(self, power):
+        self.energy_now.thermal -= self._to_energy(self.power_out_max.thermal)  # Room looses energy to the outside
+
+        additional_energy = self._to_energy(power.thermal)
+        if self.energy_now.thermal + additional_energy < self.energy_max.thermal:
+            self.energy_now.thermal += additional_energy
+            power.thermal -= power.thermal  # Room takes all energy from radiator
+
+        return power
+
