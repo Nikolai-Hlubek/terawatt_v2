@@ -18,7 +18,7 @@ from modelElectrical import *
 from modelThermal import *
 
 
-__version__ = "0.3"
+__version__ = "0.4"
 
 
 class Notification(BoxLayout):
