@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from .globals import *
+from globalvars import *
 
 class Power(object):
     def __init__(self, **kwargs):
