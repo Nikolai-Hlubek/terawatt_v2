@@ -15,14 +15,14 @@ class ModelElectrical:
         self._update_agent_n()
         self._initialize()
         self.update_external()
-        self.increment()
+#        self.increment()
 
 
     def _update_agent_n(self):
         self.agent_n = dict(
             # car1_energy = random.randint(0, terawatt_model.Car.energy_max.electrical),
             work=[9, 17],
-            distance=22,
+            distance=40,
 
             car1_energy=8000,
             charge_car1_prio=2,
@@ -40,7 +40,7 @@ class ModelElectrical:
         self.sun = terawatt_model.Sun()
         self.photovoltaic = terawatt_model.Photovoltaic()
         self.car1 = terawatt_model.Car()
-        self.car2 = terawatt_model.Car(energy_max_electrical=500, fuel_usage_100_km=250) # E-Bike
+        self.car2 = terawatt_model.Car(energy_max_electrical=500, fuel_usage_100_km=450) # E-Bike
         self.provider = terawatt_model.Provider()
         self.battery = terawatt_model.Battery()
         self.electrolysis = terawatt_model.Electrolysis()
@@ -50,7 +50,7 @@ class ModelElectrical:
         self.car1_work = False
         self.car2_work = False
 
-        self.time_current = datetime.datetime(2017, 9, 16, 7, 29, 59, 0)
+        self.time_current = datetime.datetime(2017, 9, 16, 7, 30, 0, 0)
 
 
     def update_external(self):
@@ -140,4 +140,6 @@ class ModelElectrical:
 
         power = self.provider.update(power)
 
+        if self.time_current > datetime.datetime(2017, 9, 16, 23, 59, 59, 0):
+            self.time_current = datetime.datetime(2017, 9, 16, 0, 0, 0, 0)
 

@@ -61,7 +61,7 @@ class Controller(PageLayout):
     label_car2 = StringProperty("0")
     label_increment = StringProperty("0")
     label_time = StringProperty("0")
-    number_increment = NumericProperty(600)
+    number_increment = NumericProperty(15)
 
     label_radiator1_power = StringProperty("0")
     label_radiator2_power = StringProperty("0")
