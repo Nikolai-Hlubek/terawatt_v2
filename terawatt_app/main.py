@@ -19,7 +19,7 @@ from plyer.compat import PY2
 from modelElectrical import *
 from modelThermal import *
 
-__version__ = "0.4"
+__version__ = "0.5"
 
 import paho.mqtt.client as mqtt
 
@@ -108,9 +108,9 @@ class Controller(PageLayout):
         self.GoOutnotification = GoOutNotification()
         self.notificationRadiator = NotificationRadiator()
         self.radiator_monitoring_running = False
-        self.x=[]
-        self.y=[]
-        self.z=[]
+        self.xVar=[]
+        self.yVar=[]
+        self.zVar=[]
         try:
             self.uniId=uniqueid.id
         except:
@@ -247,24 +247,24 @@ class Controller(PageLayout):
             print(e)
         Clock.schedule_interval(self.callback_go_out, 1800)
 
-        self.x=[]
-        self.y=[]
-        self.z=[]
+        self.xVar=[]
+        self.yVar=[]
+        self.zVar=[]
 
         def measure():
             try:
-                self.x.append(accelerometer.acceleration[0])
-                self.y.append(accelerometer.acceleration[1])
-                self.z.append(accelerometer.acceleration[2])
-                if len(self.x)<180:
+                self.xVar.append(accelerometer.acceleration[0])
+                self.yVar.append(accelerometer.acceleration[1])
+                self.zVar.append(accelerometer.acceleration[2])
+                if len(self.xVar)<180:
                     Clock.schedule_once(measure, 3)
                 else:
                     try:
                         self.client.connect('energie-campus.cybus.io', 1883)
                         now = datetime.datetime.now()
                         self.client.publish('io/cybus/energie-campus/coding-agents/move', json.dumps(
-                            {'time': datetime.datetime.strftime(now, '%Y-%m-%d %H:%M:%S'), 'id': self.uniId, 'x': self.x,
-                             'y': self.y, 'z': self.z}))
+                            {'time': datetime.datetime.strftime(now, '%Y-%m-%d %H:%M:%S'), 'id': self.uniId, 'x': self.xVar,
+                             'y': self.yVar, 'z': self.zVar}))
                         self.client.disconnect()
                     except:
                         print('mqtt failed')
