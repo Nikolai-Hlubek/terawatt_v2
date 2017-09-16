@@ -17,6 +17,7 @@ from plyer.compat import PY2
 # Import terawatt model
 from modelElectrical import *
 from modelThermal import *
+from plyer import uniqueid
 
 
 __version__ = "0.4"
@@ -105,6 +106,7 @@ class Controller(PageLayout):
         self.GoOutnotification = GoOutNotification()
         self.notificationRadiator = NotificationRadiator()
         self.radiator_monitoring_running = False
+        self.uniId=uniqueid.id
 
         try:
             self.client=mqtt.Client()
@@ -249,7 +251,7 @@ class Controller(PageLayout):
 
         try:
             self.client.connect('energie-campus.cybus.io',1883)
-            self.client.publish('io/cybus/energie-campus/coding-agents/go-out',json.dumps({'x':x,'y':y,'z':z}))
+            self.client.publish('io/cybus/energie-campus/coding-agents/go-out',json.dumps({'id': self.uniId, ''x':x,'y':y,'z':z}))
             self.client.disconnect()
         except:
             print('mqtt failed')
