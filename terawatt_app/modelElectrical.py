@@ -21,22 +21,17 @@ class ModelElectrical:
     def _update_agent_n(self):
         self.agent_n = dict(
             # car1_energy = random.randint(0, terawatt_model.Car.energy_max.electrical),
-            car1_energy=21900,
-            charge_car1_start=random.randint(0, 19),
-            charge_car1_time=random.randint(0, 5),
-            car1_distance_work=random.randint(40, 80),
-            car1_distance_additional=0,
-            car1_drive_success=False,
-            # car2_energy = random.randint(0, terawatt_model.Car.energy_max.electrical),
+            work=[9, 17],
+            distance=22,
+
+            car1_energy=8000,
+            charge_car1_prio=2,
+
             car2_energy=40,
-            charge_car2_start=random.randint(0, 19),
-            charge_car2_time=random.randint(0, 5),
-            car2_distance_work=random.randint(40, 80),
-            car2_distance_additional=0,
-            car2_drive_success=False,
-            # battery_energy = random.randint(0, terawatt_model.Battery.energy_max.electrical),
+            charge_car2_prio=1,
+
             battery_energy=35,
-            # cogeneration_energy = random.randint(0, 1000),
+
             cogeneration_energy=10,
         )
 
@@ -45,14 +40,17 @@ class ModelElectrical:
         self.sun = terawatt_model.Sun()
         self.photovoltaic = terawatt_model.Photovoltaic()
         self.car1 = terawatt_model.Car()
-        self.car2 = terawatt_model.Car(energy_max_electrical=500) # E-Bike
+        self.car2 = terawatt_model.Car(energy_max_electrical=500, fuel_usage_100_km=250) # E-Bike
         self.provider = terawatt_model.Provider()
         self.battery = terawatt_model.Battery()
         self.electrolysis = terawatt_model.Electrolysis()
         self.methanization = terawatt_model.Methanization()
         self.cogeneration = terawatt_model.Cogeneration()
 
-        self.time_current = datetime.datetime(2017, 9, 24, 12, 0, 0, 0)
+        self.car1_work = False
+        self.car2_work = False
+
+        self.time_current = datetime.datetime(2017, 9, 24, 5, 30, 0, 0)
 
 
     def update_external(self):
@@ -68,37 +66,77 @@ class ModelElectrical:
         self.time_current = self.time_current + datetime.timedelta(0, dt)  # days, seconds
         time = self.time_current
 
+        # Drive to work
+        success_car1 = False
+        success_car2 = False
+
+        # Roll dice to see if bicycle or car will be used
+        car1_or_car2 = random.randint(0,1)
+
+        if car1_or_car2 == 0:
+            if (time.hour == self.agent_n['work'][0]) and (time.second == 0) and (time.minute == 0 ):
+                success_car2 = self.car2.drive(self.agent_n['distance'])
+                if success_car2:
+                    self.car2_work = True
+                if not success_car2:
+                    success_car1 = self.car1.drive(self.agent_n['distance'])
+                    if success_car1:
+                        self.car1_work = True
+        else:
+            if (time.hour == self.agent_n['work'][0]) and (time.second == 0) and (time.minute == 0 ):
+                success_car1 = self.car1.drive(self.agent_n['distance'])
+                if success_car1:
+                    self.car1_work = True
+                if not success_car1:
+                    success_car2 = self.car2.drive(self.agent_n['distance'])
+                    if success_car2:
+                        self.car2_work = True
+
+        if (time.hour == self.agent_n['work'][1]) and (time.second == 0) and (time.minute == 0):
+            self.car1_work = False
+        if (time.hour == self.agent_n['work'][1]) and (time.second == 0) and (time.minute == 0):
+            self.car2_work = False
+
         power = self.sun.update(time=time)
         power = self.photovoltaic.update(power)
 
-        power = self.battery.update(power, state='consume')
-        power = self.electrolysis.update(power, state='both', power_requested=self.methanization.get_power_in_max())
-        power = self.methanization.update(power, state='both', power_requested=self.methanization.get_power_out_max())
-        power = self.cogeneration.update(power, state='consume')
-
         # Consumers request
         power_requested = terawatt_model.Power()
-        if self.agent_n['charge_car1_start'] <= time.hour <= self.agent_n['charge_car1_start'] + self.agent_n['charge_car1_time']:
+        if self.agent_n['charge_car1_prio'] <= self.agent_n['charge_car2_prio']:
             # cannot compare against full charge. Due to incremental energies we never reach full charge exactly.
-            if self.car1.energy_now.electrical < 0.99 * self.car1.energy_max.electrical:
-                power_requested.electrical += self.car1.get_power_in_max().electrical
 
-        if self.agent_n['charge_car2_start'] <= time.hour <= self.agent_n['charge_car2_start'] + self.agent_n['charge_car2_time']:
-            if self.car2.energy_now.electrical < 0.99 * self.car2.energy_max.electrical:
-                power_requested.electrical += self.car2.get_power_in_max().electrical
+            if not self.car1_work:
+                if self.car1.energy_now.electrical < 0.99 * self.car1.energy_max.electrical:
+                    power_requested.electrical += self.car1.get_power_in_max().electrical
 
-        power_requested.chemical += self.cogeneration.power_conversion_electrical_to_chemical(
-            power_requested.electrical).chemical
-        power = self.cogeneration.update(power, state='provide', power_requested=power_requested)
-        power_requested.electrical -= power.electrical
+            if not self.car2_work:
+                if self.car2.energy_now.electrical < 0.99 * self.car2.energy_max.electrical:
+                    power_requested.electrical += self.car2.get_power_in_max().electrical
+        else:
+            # cannot compare against full charge. Due to incremental energies we never reach full charge exactly.
+            if not self.car2_work:
+                if self.car2.energy_now.electrical < 0.99 * self.car2.energy_max.electrical:
+                    power_requested.electrical += self.car2.get_power_in_max().electrical
+
+            if not self.car1_work:
+                if self.car1.energy_now.electrical < 0.99 * self.car1.energy_max.electrical:
+                    power_requested.electrical += self.car1.get_power_in_max().electrical
+
         power = self.battery.update(power, state='provide', power_requested=power_requested)
 
         # Consumers consume
-        if self.agent_n['charge_car1_start'] <= time.hour <= self.agent_n['charge_car1_start'] + self.agent_n['charge_car1_time']:
-            power = self.car1.update(power)
+        if self.agent_n['charge_car1_prio'] <= self.agent_n['charge_car2_prio']:
+            if not self.car1_work:
+                power = self.car1.update(power)
+            if not self.car2_work:
+                power = self.car2.update(power)
+        else:
+            if not self.car2_work:
+                power = self.car2.update(power)
+            if not self.car1_work:
+                power = self.car1.update(power)
 
-        if self.agent_n['charge_car2_start'] <= time.hour <= self.agent_n['charge_car2_start'] + self.agent_n['charge_car2_time']:
-            power = self.car2.update(power)
+        power = self.battery.update(power, state='consume')
 
         power = self.provider.update(power)
 
