@@ -9,7 +9,7 @@ import random
 sys.path.insert(0, os.path.join('..'))
 import terawatt_model
 
-class Model:
+class ModelElectrical:
 
     def __init__(self):
         self._update_agent_n()

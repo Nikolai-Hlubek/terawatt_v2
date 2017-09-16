@@ -142,3 +142,46 @@
             text: 'Notification Test'
             size_hint: 1, None
             on_press: root.notification.do_notify(mode='normal')
+
+    GridLayout:
+        cols: 2
+        rows: 6
+
+        canvas:
+            Color:
+                rgba: 128/255.0, 255/255.0, 128/255.0, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Button:
+            text: 'Start radiator monitoring'
+            on_press: root.callback_radiator_monitoring()
+
+        Image:
+            source: "icons/IconSun.png"
+
+        Image:
+            source: "icons/IconRadiator1.png"
+
+        Label:
+            font_size: 40
+            color: (0/255.0, 0/255.0, 0/255.0, 1)
+            text: root.label_radiator1_power
+
+        Image:
+            source: "icons/IconRadiator2.png"
+
+        Label:
+            font_size: 40
+            color: (0/255.0, 0/255.0, 0/255.0, 1)
+            text: root.label_radiator2_power
+
+        Image:
+            source: "icons/IconRadiator3.png"
+
+        Label:
+            font_size: 40
+            color: (0/255.0, 0/255.0, 0/255.0, 1)
+            text: root.label_radiator3_power
+
