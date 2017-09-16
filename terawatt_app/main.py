@@ -25,6 +25,7 @@ __version__ = "0.4"
 import paho.mqtt.client as mqtt
 
 import json
+import random
 
 import datetime
 
@@ -106,14 +107,23 @@ class Controller(PageLayout):
         self.GoOutnotification = GoOutNotification()
         self.notificationRadiator = NotificationRadiator()
         self.radiator_monitoring_running = False
-        self.uniId=uniqueid.id
+        try:
+            self.uniId=uniqueid.id
+        except:
+            self.uniId=random.randint(0, 9999999999)
 
         try:
             self.client=mqtt.Client()
             self.client.username_pw_set('wtd17.coding-agents.energy-app','istmiregal')
 
             accelerometer.enable()  # enable the accelerometer
-            # if you want do disable it, just run: accelerometer.disable()
+
+            try:
+                self.client.connect('energie-campus.cybus.io', 1883)
+                self.client.publish('io/cybus/energie-campus/coding-agents/init', json.dumps({'time': datetime.datetime.now(), 'id': self.uniId}))
+                self.client.disconnect()
+            except:
+                print('mqtt failed')
         except:
      #       self.lblAcce.text = "Failed to start accelerometer"  # error
             pass
@@ -251,7 +261,7 @@ class Controller(PageLayout):
 
         try:
             self.client.connect('energie-campus.cybus.io',1883)
-            self.client.publish('io/cybus/energie-campus/coding-agents/go-out',json.dumps({'id': self.uniId, ''x':x,'y':y,'z':z}))
+            self.client.publish('io/cybus/energie-campus/coding-agents/move',json.dumps({'time': datetime.datetime.now(), 'id': self.uniId, 'x':x,'y':y,'z':z}))
             self.client.disconnect()
         except:
             print('mqtt failed')
