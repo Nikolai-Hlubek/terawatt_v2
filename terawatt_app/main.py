@@ -10,6 +10,7 @@ from kivy.properties import NumericProperty
 from kivy.clock import Clock
 
 from plyer import notification
+from plyer import accelerometer
 from plyer.utils import platform
 from plyer.compat import PY2
 
@@ -20,8 +21,33 @@ from modelThermal import *
 
 __version__ = "0.3"
 
+import paho.mqtt.client as mqtt
+
+import json
+
+import datetime
+
+import time
+
+now=datetime.datetime.now()
+#nextHour=now+datetime.timedelta(hours=1, minutes=-1*now.minute, seconds=-1*now.second, microseconds=-1*now.microsecond)
+nextHour=now+datetime.timedelta(minutes=1, seconds=-1*now.second, microseconds =-1*now.microsecond)
+deltaSeconds=(nextHour-now).seconds
 
 class Notification(BoxLayout):
+
+    def do_notify(self, mode='normal'):
+        title = self.ids.notification_title.text
+        message = self.ids.notification_text.text
+        ticker = self.ids.ticker_text.text
+        if PY2:
+            title = title.decode('utf8')
+            message = message.decode('utf8')
+        kwargs = {'title': title, 'message': message, 'ticker': ticker}
+
+        notification.notify(**kwargs)
+
+class GoOutNotification(BoxLayout):
 
     def do_notify(self, mode='normal'):
         title = self.ids.notification_title.text
@@ -76,8 +102,20 @@ class Controller(PageLayout):
         self.modelThermal3 = ModelThermal(room_power_out=100)
         self._update_labels_electrical()
         self.notification = Notification()
+        self.GoOutnotification = GoOutNotification()
         self.notificationRadiator = NotificationRadiator()
         self.radiator_monitoring_running = False
+        self.client=mqtt.Client()
+        self.client.username_pw_set('wtd17.coding-agents.energy-app','istmiregal')
+        try:
+            accelerometer.enable()  # enable the accelerometer
+            # if you want do disable it, just run: accelerometer.disable()
+        except:
+     #       self.lblAcce.text = "Failed to start accelerometer"  # error
+            pass
+
+        Clock.schedule_once(self.callback_go_out, deltaSeconds)
+
 
     def _update_labels_electrical(self):
         """
@@ -188,6 +226,28 @@ class Controller(PageLayout):
 
         Clock.schedule_once(self._callback_radiator_monitoring_do, 1)
 
+    def callback_go_out (self, *args):
+        #notification.notify(**kwargs)
+        self.GoOutnotification.do_notify()
+        Clock.schedule_interval(self.callback_go_out, 120)
+
+        x=[]
+        y=[]
+        z=[]
+        for i in range(60):
+            txt = ""
+            try:
+                x.append(accelerometer.acceleration[0]),
+            #    accelerometer.acceleration[0],  # read the X value
+                y.append(accelerometer.acceleration[1]),  # Y
+                z.append(accelerometer.acceleration[2])  # Z
+                time.sleep(1)
+            except:
+    #txt = "Cannot read accelerometer!"  # error
+               pass
+        self.client.connect('energie-campus.cybus.io',1883)
+        self.client.publish('io/cybus/energie-campus/coding-agents/go-out',json.dumps({'x':x,'y':y,'z':z}))
+        self.client.disconnect()
 
 class TerawattApp(App):
 
