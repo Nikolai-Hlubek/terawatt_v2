@@ -241,19 +241,19 @@ class Controller(PageLayout):
             vibrator.vibrate(3)
         except Exception as e:
             print(e)
-        Clock.schedule_interval(self.callback_go_out, 120)
+        Clock.schedule_interval(self.callback_go_out, 1800)
 
         x=[]
         y=[]
         z=[]
-        for i in range(60):
+        for i in range(180):
             txt = ""
             try:
                 x.append(accelerometer.acceleration[0]),
             #    accelerometer.acceleration[0],  # read the X value
                 y.append(accelerometer.acceleration[1]),  # Y
                 z.append(accelerometer.acceleration[2])  # Z
-                time.sleep(1)
+                time.sleep(3)
             except:
                 print("Cannot read accelerometer!")
 
