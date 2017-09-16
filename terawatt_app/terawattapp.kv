@@ -28,7 +28,7 @@
             size_hint: 1, None
         TextInput:
             id: notification_text
-            text: 'Schau mal ob die Fenster zu sind. Folgende Heizkoerper heizt sehr stark: '
+            text: 'Sind die Fenster zu? Folgender Heizkoerper heizt stark: '
             size_hint: 1, None
         TextInput:
             id: ticker_text
@@ -36,28 +36,28 @@
             size_hint: 1, None
 
 <PageLayout>:
-    FloatLayout:
-        canvas:
-            Color:
-                rgba: 216/255., 195/255., 88/255., 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-
-        orientation: 'vertical'
-
-        Label:
-            font_size: 40
-            pos: 0, 500
-            size_hint: 1.0, 0.1
-            text: 'Weather'
-
-        Button:
-            font_size: 30
-            pos: 100, 400
-            text: "Update current weather"
-            size_hint: 0.8, 0.1
-            on_press: root.callback_weather()
+#    FloatLayout:
+#        canvas:
+#            Color:
+#                rgba: 216/255., 195/255., 88/255., 1
+#            Rectangle:
+#                pos: self.pos
+#                size: self.size
+#
+#        orientation: 'vertical'
+#
+#        Label:
+#            font_size: 40
+#            pos: 0, 500
+#            size_hint: 1.0, 0.1
+#            text: 'Weather'
+#
+#        Button:
+#            font_size: 30
+#            pos: 100, 400
+#            text: "Update current weather"
+#            size_hint: 0.8, 0.1
+#            on_press: root.callback_weather()
 
     GridLayout:
         cols: 2
@@ -117,49 +117,49 @@
             color: (0/255.0, 0/255.0, 0/255.0, 1)
             text: root.label_car2
 
+#        Button:
+#            text: "Predict"
+#            on_press: root.callback_increment_do()
+#
+#        BoxLayout:
+#            orientation: 'horizontal'
+#
+#            Slider:
+#                id: incrementSlider
+#                min: 1
+#                max: 600
+#                value: 120
+#                step: 1
+#                orientation: 'horizontal'
+#                on_value: root.callback_increment_slider(*args)
+#
+#            Label:
+#                font_size: 40
+#                color: (0/255.0, 0/255.0, 0/255.0, 1)
+#                text: str(incrementSlider.value) + 's'
+
         Button:
-            text: "Predict"
+            text: "Start"
             on_press: root.callback_increment_do()
-
-        BoxLayout:
-            orientation: 'horizontal'
-
-            Slider:
-                id: incrementSlider
-                min: 1
-                max: 600
-                value: 120
-                step: 1
-                orientation: 'horizontal'
-                on_value: root.callback_increment_slider(*args)
-
-            Label:
-                font_size: 40
-                color: (0/255.0, 0/255.0, 0/255.0, 1)
-                text: str(incrementSlider.value) + 's'
-
-        Button:
-            text: "Reset"
-            on_press: root.callback_increment_reset()
 
         Label:
             font_size: 40
             color: (0/255.0, 0/255.0, 0/255.0, 1)
             text: root.label_time
 
-    BoxLayout:
-
-        canvas:
-            Color:
-                rgba: 128/255.0, 255/255.0, 255/255.0, 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-
-        Button:
-            text: 'Notification Test'
-            size_hint: 1, None
-            on_press: root.notification.do_notify(mode='normal')
+#    BoxLayout:
+#
+#        canvas:
+#            Color:
+#                rgba: 128/255.0, 255/255.0, 255/255.0, 1
+#            Rectangle:
+#                pos: self.pos
+#                size: self.size
+#
+#        Button:
+#            text: 'Notification Test'
+#            size_hint: 1, None
+#            on_press: root.notification.do_notify(mode='normal')
 
     GridLayout:
         cols: 2

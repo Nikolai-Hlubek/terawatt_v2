@@ -50,7 +50,7 @@ class ModelElectrical:
         self.car1_work = False
         self.car2_work = False
 
-        self.time_current = datetime.datetime(2017, 9, 16, 5, 30, 0, 0)
+        self.time_current = datetime.datetime(2017, 9, 16, 7, 29, 59, 0)
 
 
     def update_external(self):

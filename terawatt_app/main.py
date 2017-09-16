@@ -61,7 +61,7 @@ class Controller(PageLayout):
     label_car2 = StringProperty("0")
     label_increment = StringProperty("0")
     label_time = StringProperty("0")
-    number_increment = NumericProperty(120)
+    number_increment = NumericProperty(600)
 
     label_radiator1_power = StringProperty("0")
     label_radiator2_power = StringProperty("0")
@@ -69,7 +69,7 @@ class Controller(PageLayout):
 
     def __init__(self, **kwargs):
         # Call init of parent class
-        super(PageLayout, self).__init__(**kwargs)
+        super(Controller, self).__init__(**kwargs)
         self.modelElectrical = ModelElectrical()
         self.modelThermal1 = ModelThermal(room_power_out=10)
         self.modelThermal2 = ModelThermal(room_power_out=20)
@@ -133,6 +133,7 @@ class Controller(PageLayout):
         self._update_labels_electrical()
         print(self.modelElectrical.photovoltaic.energy_now.electrical)
         print(self.modelElectrical.battery.energy_now.electrical)
+        Clock.schedule_once(self.callback_increment_do, 1)
 
     def callback_increment_slider(self, instance, value):
         self.number_increment = int(value)
