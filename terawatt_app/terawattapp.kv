@@ -116,6 +116,7 @@
         ImageButton:
             source: "icons/IconCar.png"
             text: "Car1"
+            id: Button_Car1
             on_press: root.callback_car1()
 
         Label:
@@ -125,7 +126,8 @@
             text: root.label_car1
 
         ImageButton:
-            source: "icons/IconBicycle.png"
+            id: Button_Car2
+            source: "icons/IconBicycle_Select.png"
             text: "Car2"
             on_press: root.callback_car2()
 
@@ -218,10 +220,10 @@
             text: root.label_radiator3_power
 
         Button:
-            font_size: 30
+            font_size: 40
             bold: True
             height: 10
-            text: 'Start radiator monitoring'
+            text: 'Start'
             on_press: root.callback_start_radiator_monitoring()
         Image:
             source: "icons/IconSun.png"
