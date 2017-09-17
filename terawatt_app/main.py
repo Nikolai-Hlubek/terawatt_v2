@@ -19,7 +19,7 @@ from plyer.compat import PY2
 from modelElectrical import *
 from modelThermal import *
 
-__version__ = "0.5"
+__version__ = "0.6"
 
 import paho.mqtt.client as mqtt
 
@@ -170,12 +170,19 @@ class Controller(PageLayout):
         print(self.modelElectrical.battery.energy_now.electrical)
 
     def callback_car1(self, *args):
-        print("Access the car")
-        print(self.modelElectrical.car1.energy_now.electrical)
+        print("Priorize Car")
+        self.ids['Button_Car1'].source = 'icons/IconCar_Select.png'
+        self.ids['Button_Car2'].source = 'icons/IconBicycle.png'
+        self.modelElectrical.agent_n['charge_car1_prio'] = 1
+        self.modelElectrical.agent_n['charge_car2_prio'] = 2
 
     def callback_car2(self, *args):
-        print("Access the e-bicycle")
+        print("Priorize E-Bicycle")
         print(self.modelElectrical.car2.energy_now.electrical)
+        self.ids.Button_Car1.source = "icons/IconCar.png"
+        self.ids.Button_Car2.source = "icons/IconBicycle_Select.png"
+        self.modelElectrical.agent_n['charge_car1_prio'] = 2
+        self.modelElectrical.agent_n['charge_car2_prio'] = 1
 
     def callback_increment_do(self, *args):
         for i in range(self.number_increment):
